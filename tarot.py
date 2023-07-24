@@ -118,7 +118,7 @@ st.title('🔮 Tarot Habibi - by Hammoud 🔮')
 st.write('Welcome, my child. The more detail you provide in your question, the more detail I can provide in your reading. Please enter your question below and click to draw your cards. 🌟')
 
 # User enters their question
-question = st.text_input('What is your question my child? ما هو سؤالك حبيبي؟')
+question = st.text_input('What troubles you my child?')
 
 # Initialize spread as an empty dictionary
 spread = {}
