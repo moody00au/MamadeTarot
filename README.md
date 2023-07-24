@@ -3,7 +3,7 @@ Silly (or deep and mysterious) tarot readings using GPT4
 
 # Tarot Reading App
 
-This is a Streamlit app that uses OpenAI's GPT-3.5 Turbo model to provide tarot readings. The user can draw cards for a Celtic Cross spread, and the app will provide a detailed interpretation of the spread, including 2nd, 3rd, and 4th degree associations and constellations.
+This is a Streamlit app that uses OpenAI's GPT-4 model to provide tarot readings. The user can draw cards for a Celtic Cross spread, and the app will provide a detailed interpretation of the spread, including 2nd, 3rd, and 4th degree associations and constellations.
 
 ## How to run the app
 
@@ -19,9 +19,5 @@ This is a Streamlit app that uses OpenAI's GPT-3.5 Turbo model to provide tarot 
 4. Click on the 'Edit Secrets' button.
 5. Add your OpenAI API key in the following format:
 
-```json
-{
-  "openai": {
-    "api_key": "your-openai-api-key"
-  }
-}
+[openai]
+api_key = 'your-openai-api-key'
