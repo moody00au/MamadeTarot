@@ -2,9 +2,7 @@ import streamlit as st
 import openai
 from openai import ChatCompletion
 import random
-
-# Use the OpenAI API key from Streamlit secrets
-openai.api_key = st.secrets["openai"]["api_key"]
+from RWdeck import tarot_deck
 
 # Define a dictionary of tarot cards
 tarot_deck = [
@@ -88,6 +86,9 @@ tarot_deck = [
     'King of Wands'
 ]
 
+# Use the OpenAI API key from Streamlit secrets
+openai.api_key = st.secrets["openai"]["api_key"]
+
 # Define the positions in the Celtic Cross spread
 celtic_cross_positions = [
     'The Present',
@@ -103,25 +104,27 @@ celtic_cross_positions = [
 ]
 
 def get_tarot_reading(spread, question):
-    model = "gpt-4"
+    model = "gpt-3.5-turbo"
     messages = [
-        {"role": "system", "content": "You are a wise and knowledgeable tarot reader. You understand the associations and constellations of the tarot cards, and you can provide detailed interpretations including 2nd, 3rd, and 4th degree associations."},
+        {"role": "system", "content": "You are a wise and knowledgeable tarot reader with a mystical personality. You understand the associations and constellations of the tarot cards, and you can provide detailed interpretations including 2nd, 3rd, and 4th degree associations."},
         {"role": "user", "content": question},
-        {"role": "user", "content": f"Please provide a detailed reading for this Celtic Cross spread: {spread}. I would like a summary of the reading first, followed by a detailed interpretation of each card."}
+        {"role": "user", "content": f"Please provide a detailed reading for this Celtic Cross spread: {spread}. I would like a summary of the reading first, followed by a detailed interpretation of each card. Please provide the reading in both English and Arabic, with the English reading first."}
     ]
     response = ChatCompletion.create(model=model, messages=messages)
     return response['choices'][0]['message']['content']
 
-st.title('Madame Tarot Habibi - Made by Hammoud')
+st.title('🔮 Madame Tarot Habibi - Made by Hammoud 🔮')
+
+st.write('Welcome, my child. The more detail you provide in your question, the more detail I can provide in your reading. Please enter your question below. 🌟')
 
 # User enters their question
-question = st.text_input('What is your question?')
+question = st.text_input('What is your question? ما هو سؤالك؟')
 
 # Initialize spread as an empty dictionary
 spread = {}
 
 # User clicks to draw cards for the spread
-if st.button('Draw Cards'):
+if st.button('Draw Cards 🃏'):
     deck = tarot_deck.copy()  # Make a copy of the deck to draw from
     for position in celtic_cross_positions:
         card = random.choice(deck)
