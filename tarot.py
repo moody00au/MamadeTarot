@@ -103,7 +103,7 @@ celtic_cross_positions = [
 ]
 
 def get_tarot_reading(spread, question):
-    model = "gpt-3.5-turbo"
+    model = "gpt-4"
     messages = [
         {"role": "system", "content": "You are a wise and knowledgeable tarot reader. You understand the associations and constellations of the tarot cards, and you can provide detailed interpretations including 2nd, 3rd, and 4th degree associations."},
         {"role": "user", "content": question},
@@ -112,7 +112,7 @@ def get_tarot_reading(spread, question):
     response = ChatCompletion.create(model=model, messages=messages)
     return response['choices'][0]['message']['content']
 
-st.title('Tarot Reading App')
+st.title('Madame Tarot Habibi - Made by Hammoud')
 
 # User enters their question
 question = st.text_input('What is your question?')
