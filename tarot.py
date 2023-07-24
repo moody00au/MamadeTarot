@@ -131,8 +131,6 @@ if st.button('Draw Cards 🃏'):
         deck.remove(card)  # Remove the card from the deck
         spread[position] = card
         st.write(f"{position}: {card}")
-
-    # Get tarot reading from GPT-4
-    reading = get_tarot_reading(spread, question)
-    st.write(reading)
-
+        # Get tarot reading from GPT-4
+        reading = get_tarot_reading(spread, question)
+        st.write(reading)
