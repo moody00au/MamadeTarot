@@ -110,9 +110,6 @@ def get_tarot_reading(spread, question, follow_up_questions=None):
         {"role": "user", "content": question},
         {"role": "user", "content": f"Please provide a detailed reading for this Celtic Cross spread: {spread}. I would like a summary of the reading first, followed by a detailed interpretation of each card. Please provide the reading in both English and Arabic, with the English reading first."}
     ]
-    if follow_up_questions:
-        for question in follow_up_questions:
-            messages.append({"role": "user", "content": question})
     response = ChatCompletion.create(model=model, messages=messages)
     return response['choices'][0]['message']['content']
 
@@ -135,18 +132,7 @@ if st.button('Draw Cards 🃏'):
         spread[position] = card
         st.write(f"{position}: {card}")
 
-    # Get tarot reading from GPT-3.5 Turbo
+    # Get tarot reading from GPT-4
     reading = get_tarot_reading(spread, question)
     st.write(reading)
 
-    # User enters their follow-up questions
-    follow_up_questions = []
-    for i in range(1, 4):
-        follow_up_question = st.text_input(f'Follow-up question {i}:')
-        if follow_up_question:
-            follow_up_questions.append(follow_up_question)
-
-    if follow_up_questions:
-        # Get follow-up reading from GPT-3.5 Turbo
-        follow_up_reading = get_tarot_reading(spread, question, follow_up_questions)
-        st.write(follow_up_reading)
