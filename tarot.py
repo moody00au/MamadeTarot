@@ -2,7 +2,6 @@ import streamlit as st
 import openai
 from openai import ChatCompletion
 import random
-from RWdeck import tarot_deck
 
 # Define a dictionary of tarot cards
 tarot_deck = [
