@@ -3,6 +3,10 @@ import openai
 from openai import ChatCompletion
 import random
 
+
+# Use the OpenAI API key from Streamlit secrets
+openai.api_key = st.secrets["openai"]["api_key"]
+
 # Define a dictionary of tarot cards
 tarot_deck = [
     'The Fool',
@@ -85,9 +89,6 @@ tarot_deck = [
     'King of Wands'
 ]
 
-# Use the OpenAI API key from Streamlit secrets
-openai.api_key = st.secrets["openai"]["api_key"]
-
 # Define the positions in the Celtic Cross spread
 celtic_cross_positions = [
     'The Present',
@@ -102,22 +103,25 @@ celtic_cross_positions = [
     'Outcome'
 ]
 
-def get_tarot_reading(spread, question):
-    model = "gpt-3.5-turbo"
+def get_tarot_reading(spread, question, follow_up_questions=None):
+    model = "gpt-4"
     messages = [
         {"role": "system", "content": "You are a wise and knowledgeable tarot reader with a mystical personality. You understand the associations and constellations of the tarot cards, and you can provide detailed interpretations including 2nd, 3rd, and 4th degree associations."},
         {"role": "user", "content": question},
         {"role": "user", "content": f"Please provide a detailed reading for this Celtic Cross spread: {spread}. I would like a summary of the reading first, followed by a detailed interpretation of each card. Please provide the reading in both English and Arabic, with the English reading first."}
     ]
+    if follow_up_questions:
+        for question in follow_up_questions:
+            messages.append({"role": "user", "content": question})
     response = ChatCompletion.create(model=model, messages=messages)
     return response['choices'][0]['message']['content']
 
-st.title('🔮 Madame Tarot Habibi - Made by Hammoud 🔮')
+st.title('🔮 Tarot Habibi - by Hammoud 🔮')
 
-st.write('Welcome, my child. The more detail you provide in your question, the more detail I can provide in your reading. Please enter your question below. 🌟')
+st.write('Welcome, my child. The more detail you provide in your question, the more detail I can provide in your reading. Please enter your question below and click to draw your cards. 🌟')
 
 # User enters their question
-question = st.text_input('What is your question? ما هو سؤالك؟')
+question = st.text_input('What is your question my child? ما هو سؤالك حبيبي؟')
 
 # Initialize spread as an empty dictionary
 spread = {}
@@ -134,3 +138,15 @@ if st.button('Draw Cards 🃏'):
     # Get tarot reading from GPT-3.5 Turbo
     reading = get_tarot_reading(spread, question)
     st.write(reading)
+
+    # User enters their follow-up questions
+    follow_up_questions = []
+    for i in range(1, 4):
+        follow_up_question = st.text_input(f'Follow-up question {i}:')
+        if follow_up_question:
+            follow_up_questions.append(follow_up_question)
+
+    if follow_up_questions:
+        # Get follow-up reading from GPT-3.5 Turbo
+        follow_up_reading = get_tarot_reading(spread, question, follow_up_questions)
+        st.write(follow_up_reading)
