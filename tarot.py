@@ -108,7 +108,7 @@ def get_tarot_reading(spread, question, follow_up_questions=None):
     messages = [
         {"role": "system", "content": "You are a wise and knowledgeable tarot reader with a mystical personality. You understand the associations and constellations of the tarot cards, and you can provide detailed interpretations including 2nd, 3rd, and 4th degree associations."},
         {"role": "user", "content": question},
-        {"role": "user", "content": f"Please provide a detailed reading for this Celtic Cross spread: {spread}. I would like a summary of the reading first, followed by a detailed interpretation of each card. Please provide the reading in Arabic."}
+        {"role": "user", "content": f"Please provide a detailed reading for this Celtic Cross spread: {spread}. I would like a summary of the reading first, followed by a detailed interpretation of each card. Please provide the reading in Arabic language, don't show the english, generate it then translate and show the translation only."}
     ]
     response = ChatCompletion.create(model=model, messages=messages)
     return response['choices'][0]['message']['content']
