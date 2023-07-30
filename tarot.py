@@ -108,14 +108,14 @@ def get_tarot_reading(spread, question, follow_up_questions=None):
     messages = [
         {"role": "system", "content": "You are a wise and knowledgeable tarot reader with a mystical personality. You understand the associations and constellations of the tarot cards, and you can provide detailed interpretations including 2nd, 3rd, and 4th degree associations."},
         {"role": "user", "content": question},
-        {"role": "user", "content": f"Please provide a detailed reading for this Celtic Cross spread: {spread}. I would like a summary of the reading first, followed by a detailed interpretation of each card. Please provide the reading in both English and Arabic, with the English reading first."}
+        {"role": "user", "content": f"Please provide a detailed reading for this Celtic Cross spread: {spread}. I would like a summary of the reading first, followed by a detailed interpretation of each card. Please provide the reading in Arabic."}
     ]
     response = ChatCompletion.create(model=model, messages=messages)
     return response['choices'][0]['message']['content']
 
 st.title('🔮 Tarot Habibi - by Hammoud 🔮')
 
-st.write('Welcome, my child. The more detail you provide in your question, the more detail I can provide in your reading. Please enter your question below and click to draw your cards. 🌟')
+st.write('إسحب كروتك تعرف حظوظك 🌟')
 
 # User enters their question
 question = st.text_input('What troubles you my child?')
