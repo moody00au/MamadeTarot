@@ -140,6 +140,7 @@ if st.button('Draw Cards 🃏'):
     for position in celtic_cross_positions:
         card = random.choice(deck)
         deck.remove(card)
+        spread[position] = card  # Update the spread dictionary with the drawn card
         st.write(f"{position}: {card}")
         
         # Get tarot reading for the drawn card
@@ -158,3 +159,4 @@ if spread_drawn:
         conversation_history.append({"role": "user", "content": follow_up_question})
         follow_up_response = get_tarot_reading({}, follow_up_question, conversation_history=conversation_history)
         st.write(follow_up_response)
+
