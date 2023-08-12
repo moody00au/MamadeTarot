@@ -111,14 +111,14 @@ def get_tarot_reading(spread, question, holistic=False, conversation_history=[])
     model = "gpt-3.5-turbo"
     if not holistic:
         position, card = list(spread.items())[0]
-        new_message = {"role": "user", "content": f"Please provide a detailed reading for the card {card} in the position {position}."}
+        new_message = {"role": "user", "content": f"Please provide a concise reading for the card {card} in the position {position}."}
     else:
         new_message = {"role": "user", "content": f"Please provide a relational reading for this spread: {spread}."}
     
     conversation_history.append(new_message)
     response = ChatCompletion.create(model=model, messages=conversation_history)
     conversation_history.append({"role": "assistant", "content": response['choices'][0]['message']['content']})
-    return trim_response_to_words(response['choices'][0]['message']['content'])
+    return 
 
 st.title('🔮 Tarot Habibi - by Hammoud 🔮')
 st.write('Welcome to Tarot Habibi! This app provides tarot card readings using the Celtic Cross spread. Simply enter your question and draw the cards to receive insights into various aspects of your life. If you\'re new to tarot, don\'t worry! Each card\'s meaning will be explained in detail. Ready to begin? Please enter your question below:')
