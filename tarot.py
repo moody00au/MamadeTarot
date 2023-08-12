@@ -108,7 +108,7 @@ def trim_response_to_words(response, max_words=70):
     return ' '.join(words[:max_words])
 
 def get_tarot_reading(spread, question, holistic=False, conversation_history=[]):
-    model = "gpt-4"
+    model = "gpt-3.5-turbo"
     if not holistic:
         position, card = list(spread.items())[0]
         new_message = {"role": "user", "content": f"Please provide a detailed reading for the card {card} in the position {position}."}
