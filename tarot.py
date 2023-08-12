@@ -103,6 +103,10 @@ celtic_cross_positions = [
     'Outcome'
 ]
 
+def trim_response_to_words(response, max_words=70):
+    words = response.split()
+    return ' '.join(words[:max_words])
+
 def get_tarot_reading(spread, question, holistic=False, conversation_history=[]):
     model = "gpt-4"
     if not holistic:
@@ -114,7 +118,7 @@ def get_tarot_reading(spread, question, holistic=False, conversation_history=[])
     conversation_history.append(new_message)
     response = ChatCompletion.create(model=model, messages=conversation_history)
     conversation_history.append({"role": "assistant", "content": response['choices'][0]['message']['content']})
-    return response['choices'][0]['message']['content']
+    return trim_response_to_words(response['choices'][0]['message']['content'])
 
 st.title('🔮 Tarot Habibi - by Hammoud 🔮')
 st.write('Welcome to Tarot Habibi! This app provides tarot card readings using the Celtic Cross spread. Simply enter your question and draw the cards to receive insights into various aspects of your life. If you\'re new to tarot, don\'t worry! Each card\'s meaning will be explained in detail. Ready to begin? Please enter your question below:')
@@ -131,8 +135,11 @@ conversation_history = [
     {"role": "user", "content": question}
 ]
 
+spread_drawn = False
+
 # User clicks to draw cards for the spread
 if st.button('Draw Cards 🃏'):
+    spread_drawn = True
     deck = tarot_deck.copy()
     for position in celtic_cross_positions:
         card = random.choice(deck)
@@ -149,7 +156,9 @@ if st.button('Draw Cards 🃏'):
     st.write(holistic_reading)
 
 # Allow user to ask follow-up questions
-follow_up_question = st.text_input('Do you have any follow-up questions?')
-if follow_up_question:
-    follow_up_response = get_tarot_reading({}, follow_up_question, conversation_history=conversation_history)
-    st.write(follow_up_response)
+if spread_drawn:
+    follow_up_question = st.text_input('Do you have any follow-up questions?')
+    if follow_up_question:
+        conversation_history.append({"role": "user", "content": follow_up_question})
+        follow_up_response = get_tarot_reading({}, follow_up_question, conversation_history=conversation_history)
+        st.write(follow_up_response)
