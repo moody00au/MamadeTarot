@@ -107,7 +107,7 @@ def get_tarot_reading(spread, question, holistic=False, conversation_history=[])
     model = "gpt-3.5-turbo"
     if not holistic:
         position, card = list(spread.items())[0]
-        new_message = {"role": "user", "content": f"Please provide a concise, one parahraph reading for the card {card} in the position {position}."}
+        new_message = {"role": "user", "content": f"Please provide a concise, two line reading for the card {card} in the position {position}."}
     else:
         new_message = {"role": "user", "content": f"Please provide a relational reading for this spread: {spread}."}
     
