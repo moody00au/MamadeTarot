@@ -102,15 +102,18 @@ celtic_cross_positions = [
     'Hopes and Fears',
     'Outcome'
 ]
-def get_tarot_reading(spread, question):
+
+def get_tarot_reading(spread, question, holistic=False, conversation_history=[]):
     model = "gpt-4"
-    position, card = list(spread.items())[0]  # Extract the single position and card from the spread
-    messages = [
-        {"role": "system", "content": "You are a wise and knowledgeable tarot reader. Provide a detailed interpretation of the card, explaining the process of tarot reading and its significance. Ensure the reading is beginner-friendly."},
-        {"role": "user", "content": question},
-        {"role": "user", "content": f"Please provide a detailed reading for the card {card} in the position {position}."}
-    ]
-    response = ChatCompletion.create(model=model, messages=messages)
+    if not holistic:
+        position, card = list(spread.items())[0]
+        new_message = {"role": "user", "content": f"Please provide a detailed reading for the card {card} in the position {position}."}
+    else:
+        new_message = {"role": "user", "content": f"Please provide a relational reading for this spread: {spread}."}
+    
+    conversation_history.append(new_message)
+    response = ChatCompletion.create(model=model, messages=conversation_history)
+    conversation_history.append({"role": "assistant", "content": response['choices'][0]['message']['content']})
     return response['choices'][0]['message']['content']
 
 st.title('🔮 Tarot Habibi - by Hammoud 🔮')
@@ -122,6 +125,12 @@ question = st.text_input('What troubles you my child?')
 # Initialize spread as an empty dictionary
 spread = {}
 
+# Initialize conversation history
+conversation_history = [
+    {"role": "system", "content": "You are a wise and knowledgeable tarot reader. Provide detailed interpretations of the cards, considering relationships between them. Ensure the reading is beginner-friendly."},
+    {"role": "user", "content": question}
+]
+
 # User clicks to draw cards for the spread
 if st.button('Draw Cards 🃏'):
     deck = tarot_deck.copy()
@@ -131,5 +140,16 @@ if st.button('Draw Cards 🃏'):
         st.write(f"{position}: {card}")
         
         # Get tarot reading for the drawn card
-        reading = get_tarot_reading({position: card}, question)
+        reading = get_tarot_reading({position: card}, question, conversation_history=conversation_history)
         st.write(reading)
+    
+    # Get a holistic reading of the entire spread
+    holistic_reading = get_tarot_reading(spread, question, holistic=True, conversation_history=conversation_history)
+    st.write("Holistic Reading of the Spread:")
+    st.write(holistic_reading)
+
+# Allow user to ask follow-up questions
+follow_up_question = st.text_input('Do you have any follow-up questions?')
+if follow_up_question:
+    follow_up_response = get_tarot_reading({}, follow_up_question, conversation_history=conversation_history)
+    st.write(follow_up_response)
