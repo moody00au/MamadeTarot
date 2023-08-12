@@ -102,20 +102,19 @@ celtic_cross_positions = [
     'Hopes and Fears',
     'Outcome'
 ]
-
-def get_tarot_reading(spread, question, follow_up_questions=None):
+def get_tarot_reading(spread, question):
     model = "gpt-4"
+    position, card = list(spread.items())[0]  # Extract the single position and card from the spread
     messages = [
-        {"role": "system", "content": "You are a wise and knowledgeable tarot reader with a mystical personality. You understand the associations and constellations of the tarot cards, and you can provide detailed interpretations including 2nd, 3rd, and 4th degree associations."},
+        {"role": "system", "content": "You are a wise and knowledgeable tarot reader. Provide a detailed interpretation of the card, explaining the process of tarot reading and its significance. Ensure the reading is beginner-friendly."},
         {"role": "user", "content": question},
-        {"role": "user", "content": f"Please provide a detailed reading for this Celtic Cross spread: {spread}. I would like a summary of the reading first, followed by a detailed interpretation of each card. Please provide the reading in Arabic language, don't show the english, generate it then translate and show the translation only."}
+        {"role": "user", "content": f"Please provide a detailed reading for the card {card} in the position {position}."}
     ]
     response = ChatCompletion.create(model=model, messages=messages)
     return response['choices'][0]['message']['content']
 
 st.title('🔮 Tarot Habibi - by Hammoud 🔮')
-
-st.write('إسحب كروتك تعرف حظوظك 🌟')
+st.write('Welcome to Tarot Habibi! This app provides tarot card readings using the Celtic Cross spread. Simply enter your question and draw the cards to receive insights into various aspects of your life. If you\'re new to tarot, don\'t worry! Each card\'s meaning will be explained in detail. Ready to begin? Please enter your question below:')
 
 # User enters their question
 question = st.text_input('What troubles you my child?')
@@ -125,14 +124,12 @@ spread = {}
 
 # User clicks to draw cards for the spread
 if st.button('Draw Cards 🃏'):
-    deck = tarot_deck.copy()  # Make a copy of the deck to draw from
+    deck = tarot_deck.copy()
     for position in celtic_cross_positions:
         card = random.choice(deck)
-        deck.remove(card)  # Remove the card from the deck
-        spread[position] = card
+        deck.remove(card)
         st.write(f"{position}: {card}")
-
-    # Get tarot reading from GPT-4
-    reading = get_tarot_reading(spread, question)
-    st.write(reading)
-
+        
+        # Get tarot reading for the drawn card
+        reading = get_tarot_reading({position: card}, question)
+        st.write(reading)
