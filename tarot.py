@@ -131,13 +131,20 @@ if 'conversation_history' not in st.session_state:
 if 'spread_drawn' not in st.session_state:
     st.session_state.spread_drawn = False
 
+# Display the entire conversation history
+for message in st.session_state.conversation_history:
+    if message["role"] == "user":
+        st.write(f"You: {message['content']}")
+    else:
+        st.write(f"Assistant: {message['content']}")
+
 # User enters their question
 question = st.text_input('What troubles you my child?')
-st.session_state.conversation_history.append({"role": "user", "content": question})
 
 # User clicks to draw cards for the spread
-if st.button('Draw Cards 🃏'):
+if st.button('Draw Cards 🃏') and question:
     st.session_state.spread_drawn = True
+    st.session_state.conversation_history.append({"role": "user", "content": question})
     deck = tarot_deck.copy()
     for position in celtic_cross_positions:
         card = random.choice(deck)
@@ -147,17 +154,20 @@ if st.button('Draw Cards 🃏'):
         
         # Get tarot reading for the drawn card
         reading = get_tarot_reading({position: card}, question, conversation_history=st.session_state.conversation_history)
+        st.session_state.conversation_history.append({"role": "assistant", "content": reading})
         st.write(reading)
     
     # Get a holistic reading of the entire spread
     holistic_reading = get_tarot_reading(st.session_state.spread, question, holistic=True, conversation_history=st.session_state.conversation_history)
+    st.session_state.conversation_history.append({"role": "assistant", "content": holistic_reading})
     st.write("Holistic Reading of the Spread:")
     st.write(holistic_reading)
 
 # Allow user to ask follow-up questions
 if st.session_state.spread_drawn:
     follow_up_question = st.text_input('Do you have any follow-up questions?')
-    if follow_up_question:
+    if st.button('Submit Follow-up'):
         st.session_state.conversation_history.append({"role": "user", "content": follow_up_question})
         follow_up_response = get_tarot_reading({}, follow_up_question, conversation_history=st.session_state.conversation_history)
+        st.session_state.conversation_history.append({"role": "assistant", "content": follow_up_response})
         st.write(follow_up_response)
