@@ -103,10 +103,6 @@ celtic_cross_positions = [
     'Outcome'
 ]
 
-def trim_response_to_words(response, max_words=70):
-    words = response.split()
-    return ' '.join(words[:max_words])
-
 def get_tarot_reading(spread, question, holistic=False, conversation_history=[]):
     model = "gpt-3.5-turbo"
     if not holistic:
@@ -118,7 +114,7 @@ def get_tarot_reading(spread, question, holistic=False, conversation_history=[])
     conversation_history.append(new_message)
     response = ChatCompletion.create(model=model, messages=conversation_history)
     conversation_history.append({"role": "assistant", "content": response['choices'][0]['message']['content']})
-    return 
+    return response['choices'][0]['message']['content']
 
 st.title('🔮 Tarot Habibi - by Hammoud 🔮')
 st.write('Welcome to Tarot Habibi! This app provides tarot card readings using the Celtic Cross spread. Simply enter your question and draw the cards to receive insights into various aspects of your life. If you\'re new to tarot, don\'t worry! Each card\'s meaning will be explained in detail. Ready to begin? Please enter your question below:')
