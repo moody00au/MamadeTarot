@@ -119,44 +119,43 @@ def get_tarot_reading(spread, question, holistic=False, conversation_history=[])
 st.title('🔮 Tarot Habibi - by Hammoud 🔮')
 st.write('Welcome to Tarot Habibi! This app provides tarot card readings using the Celtic Cross spread. Simply enter your question and draw the cards to receive insights into various aspects of your life. If you\'re new to tarot, don\'t worry! Each card\'s meaning will be explained in detail. Ready to begin? Please enter your question below:')
 
+# Initialize session state variables if they don't exist
+if 'spread' not in st.session_state:
+    st.session_state.spread = {}
+if 'conversation_history' not in st.session_state:
+    st.session_state.conversation_history = [
+        {"role": "system", "content": "You are a wise and knowledgeable tarot reader. Provide detailed interpretations of the cards, considering relationships between them. Ensure the reading is beginner-friendly."},
+    ]
+if 'spread_drawn' not in st.session_state:
+    st.session_state.spread_drawn = False
+
 # User enters their question
 question = st.text_input('What troubles you my child?')
-
-# Initialize spread as an empty dictionary
-spread = {}
-
-# Initialize conversation history
-conversation_history = [
-    {"role": "system", "content": "You are a wise and knowledgeable tarot reader. Provide detailed interpretations of the cards, considering relationships between them. Ensure the reading is beginner-friendly."},
-    {"role": "user", "content": question}
-]
-
-spread_drawn = False
+st.session_state.conversation_history.append({"role": "user", "content": question})
 
 # User clicks to draw cards for the spread
 if st.button('Draw Cards 🃏'):
-    spread_drawn = True
+    st.session_state.spread_drawn = True
     deck = tarot_deck.copy()
     for position in celtic_cross_positions:
         card = random.choice(deck)
         deck.remove(card)
-        spread[position] = card  # Update the spread dictionary with the drawn card
+        st.session_state.spread[position] = card
         st.write(f"{position}: {card}")
         
         # Get tarot reading for the drawn card
-        reading = get_tarot_reading({position: card}, question, conversation_history=conversation_history)
+        reading = get_tarot_reading({position: card}, question, conversation_history=st.session_state.conversation_history)
         st.write(reading)
     
     # Get a holistic reading of the entire spread
-    holistic_reading = get_tarot_reading(spread, question, holistic=True, conversation_history=conversation_history)
+    holistic_reading = get_tarot_reading(st.session_state.spread, question, holistic=True, conversation_history=st.session_state.conversation_history)
     st.write("Holistic Reading of the Spread:")
     st.write(holistic_reading)
 
 # Allow user to ask follow-up questions
-if spread_drawn:
+if st.session_state.spread_drawn:
     follow_up_question = st.text_input('Do you have any follow-up questions?')
     if follow_up_question:
-        conversation_history.append({"role": "user", "content": follow_up_question})
-        follow_up_response = get_tarot_reading({}, follow_up_question, conversation_history=conversation_history)
+        st.session_state.conversation_history.append({"role": "user", "content": follow_up_question})
+        follow_up_response = get_tarot_reading({}, follow_up_question, conversation_history=st.session_state.conversation_history)
         st.write(follow_up_response)
-
