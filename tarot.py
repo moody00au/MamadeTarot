@@ -109,19 +109,25 @@ celtic_cross_positions = [
 
 def get_tarot_reading(spread, question, holistic=False):
     model = "gpt-3.5-turbo"
-    position, card = list(spread.items())[0]
     
     if holistic:
-        prompt_content = "You are a wise and knowledgeable tarot reader. Provide a 3-paragraph holistic interpretation without referring to the cards directly. Instead, focus on the positions and the influences and advice they represent."
+        spread_description = ". ".join([f"{pos}: {card}" for pos, card in spread.items()])
+        prompt_content = f"You are a wise and knowledgeable tarot reader. Given the spread: {spread_description}, provide a 3-paragraph holistic interpretation without referring to the cards directly. Instead, focus on the positions and the influences and advice they represent."
+        messages = [
+            {"role": "system", "content": "You are a wise and knowledgeable tarot reader."},
+            {"role": "user", "content": question},
+            {"role": "user", "content": prompt_content}
+        ]
     else:
+        position, card = list(spread.items())[0]
         prompt_content = "You are a wise and knowledgeable tarot reader. Provide a one-paragraph interpretation of the card, explaining its significance without referring to the card directly. Ensure the reading is beginner-friendly."
+        messages = [
+            {"role": "system", "content": "You are a wise and knowledgeable tarot reader."},
+            {"role": "user", "content": question},
+            {"role": "user", "content": f"Please provide a reading for the card {card} in the position {position}."}
+        ]
     
-    messages = [
-        {"role": "system", "content": prompt_content},
-        {"role": "user", "content": question},
-        {"role": "user", "content": f"Please provide a reading for the card {card} in the position {position}."}
-    ]
-    response = ChatCompletion.create(model=model, messages=messages)
+    response = openai.Completion.create(model=model, messages=messages)
     return response['choices'][0]['message']['content']
 
 def get_card_image_url(card_name):
@@ -163,9 +169,13 @@ position_descriptions = {
 # User clicks to draw cards for the spread
 if st.button('Draw Cards 🃏'):
     deck = tarot_deck.copy()
+    drawn_spread = {}  # To save the drawn spread for holistic reading
     for position in celtic_cross_positions:
         card = random.choice(deck)
         deck.remove(card)
+        
+        # Save the drawn card to the spread
+        drawn_spread[position] = card
         
         # Display card name, position, and description
         st.write(f"**{position}: {card}** - {position_descriptions[position]}")
@@ -179,9 +189,6 @@ if st.button('Draw Cards 🃏'):
         reading = get_tarot_reading({position: card}, question)
         st.write(reading)
         
-        # Accumulate readings for holistic interpretation
-        holistic_reading += f"For the position of {position}, {reading} "
-
-    # Display holistic reading
-    holistic_interpretation = get_tarot_reading({}, question, holistic=True)
+    # Display holistic reading using the drawn spread
+    holistic_interpretation = get_tarot_reading(drawn_spread, question, holistic=True)
     st.write(holistic_interpretation)
