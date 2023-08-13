@@ -2,7 +2,7 @@ import streamlit as st
 import openai
 from openai import ChatCompletion
 import random
-
+from VoxScript import GetGoogleSearchResults
 
 # Use the OpenAI API key from Streamlit secrets
 openai.api_key = st.secrets["openai"]["api_key"]
@@ -103,71 +103,46 @@ celtic_cross_positions = [
     'Outcome'
 ]
 
-def get_tarot_reading(spread, question, holistic=False, conversation_history=[]):
-    model = "gpt-3.5-turbo"
-    if not holistic and spread:
-        position, card = list(spread.items())[0]
-        new_message = {"role": "user", "content": f"Please provide a concise - one line reading for the card {card} in the position {position}."}
-    elif holistic:
-        new_message = {"role": "user", "content": f"Please provide a relational reading for this spread: {spread}."}
-    else:  # This handles the follow-up questions
-        new_message = {"role": "user", "content": question}
-    
-    conversation_history.append(new_message)
-    response = ChatCompletion.create(model=model, messages=conversation_history)
-    conversation_history.append({"role": "assistant", "content": response['choices'][0]['message']['content']})
+def get_tarot_reading(spread, question):
+    model = "gpt-4"
+    position, card = list(spread.items())[0]  # Extract the single position and card from the spread
+    messages = [
+        {"role": "system", "content": "You are a wise and knowledgeable tarot reader. Provide a 3-paragraph narrative interpretation of the card, explaining its significance without referring to the card directly. Ensure the reading is beginner-friendly."},
+        {"role": "user", "content": question},
+        {"role": "user", "content": f"Please provide a detailed reading for the card {card} in the position {position}."}
+    ]
+    response = ChatCompletion.create(model=model, messages=messages)
     return response['choices'][0]['message']['content']
+
+def get_card_image_url(card_name):
+    search_results = GetGoogleSearchResults(searchTerm=f"{card_name} tarot card image")
+    if search_results and search_results['results']:
+        return search_results['results'][0]['link']
+    return None
 
 st.title('🔮 Tarot Habibi - by Hammoud 🔮')
 st.write('Welcome to Tarot Habibi! This app provides tarot card readings using the Celtic Cross spread. Simply enter your question and draw the cards to receive insights into various aspects of your life. If you\'re new to tarot, don\'t worry! Each card\'s meaning will be explained in detail. Ready to begin? Please enter your question below:')
 
-# Initialize session state variables if they don't exist
-if 'spread' not in st.session_state:
-    st.session_state.spread = {}
-if 'conversation_history' not in st.session_state:
-    st.session_state.conversation_history = [
-        {"role": "system", "content": "You are a wise and knowledgeable tarot reader. Provide detailed interpretations of the cards, considering relationships between them. Ensure the reading is beginner-friendly."},
-    ]
-if 'spread_drawn' not in st.session_state:
-    st.session_state.spread_drawn = False
-
-# Display the entire conversation history
-for message in st.session_state.conversation_history:
-    if message["role"] == "user":
-        st.write(f"You: {message['content']}")
-    else:
-        st.write(f"Assistant: {message['content']}")
-
 # User enters their question
 question = st.text_input('What troubles you my child?')
 
+# Initialize spread as an empty dictionary
+spread = {}
+
 # User clicks to draw cards for the spread
-if st.button('Draw Cards 🃏') and question:
-    st.session_state.spread_drawn = True
-    st.session_state.conversation_history.append({"role": "user", "content": question})
+if st.button('Draw Cards 🃏'):
     deck = tarot_deck.copy()
     for position in celtic_cross_positions:
         card = random.choice(deck)
         deck.remove(card)
-        st.session_state.spread[position] = card
-        st.write(f"{position}: {card}")
+        
+        # Display card image
+        image_url = get_card_image_url(card)
+        if image_url:
+            st.image(image_url, caption=card, use_column_width=True)
+        else:
+            st.write(f"{position}: {card}")
         
         # Get tarot reading for the drawn card
-        reading = get_tarot_reading({position: card}, question, conversation_history=st.session_state.conversation_history)
-        st.session_state.conversation_history.append({"role": "assistant", "content": reading})
+        reading = get_tarot_reading({position: card}, question)
         st.write(reading)
-    
-    # Get a holistic reading of the entire spread
-    holistic_reading = get_tarot_reading(st.session_state.spread, question, holistic=True, conversation_history=st.session_state.conversation_history)
-    st.session_state.conversation_history.append({"role": "assistant", "content": holistic_reading})
-    st.write("Holistic Reading of the Spread:")
-    st.write(holistic_reading)
-
-# Allow user to ask follow-up questions
-if st.session_state.spread_drawn:
-    follow_up_question = st.text_input('Do you have any follow-up questions?')
-    if st.button('Submit Follow-up'):
-        st.session_state.conversation_history.append({"role": "user", "content": follow_up_question})
-        follow_up_response = get_tarot_reading({}, follow_up_question, conversation_history=st.session_state.conversation_history)
-        st.session_state.conversation_history.append({"role": "assistant", "content": follow_up_response})
-        st.write(follow_up_response)
