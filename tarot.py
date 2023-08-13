@@ -94,6 +94,19 @@ tarot_deck = [
     'King of Wands'
 ]
 
+celtic_cross_positions = [
+    'The Present',
+    'The Challenge',
+    'The Past',
+    'The Future',
+    'Above',
+    'Below',
+    'Advice',
+    'External Influences',
+    'Hopes and Fears',
+    'Outcome'
+]
+
 def get_tarot_reading(spread, question):
     model = "gpt-4"
     position, card = list(spread.items())[0]
