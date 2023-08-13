@@ -105,7 +105,7 @@ celtic_cross_positions = [
 
 def get_tarot_reading(spread, question):
     model = "gpt-4"
-    position, card = list(spread.items())[0]  # Extract the single position and card from the spread
+    position, card = list(spread.items())[0]
     messages = [
         {"role": "system", "content": "You are a wise and knowledgeable tarot reader. Provide a 3-paragraph narrative interpretation of the card, explaining its significance without referring to the card directly. Ensure the reading is beginner-friendly."},
         {"role": "user", "content": question},
@@ -115,9 +115,15 @@ def get_tarot_reading(spread, question):
     return response['choices'][0]['message']['content']
 
 def get_card_image_url(card_name):
-    search_results = GetGoogleSearchResults(searchTerm=f"{card_name} tarot card image")
-    if search_results and search_results['results']:
-        return search_results['results'][0]['link']
+    search_url = f"https://www.google.com/search?q=Rider+Waite+Original+{card_name}&tbm=isch"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+    response = requests.get(search_url, headers=headers)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    img_tag = soup.find("img")
+    if img_tag and 'src' in img_tag.attrs:
+        return img_tag['src']
     return None
 
 st.title('🔮 Tarot Habibi - by Hammoud 🔮')
