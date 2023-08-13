@@ -112,7 +112,7 @@ def get_tarot_reading(spread, question, holistic=False):
     position, card = list(spread.items())[0]
     
     if holistic:
-        prompt_content = "You are a wise and knowledgeable tarot reader. Provide a 3-paragraph holistic interpretation of the card, explaining its significance without referring to the card directly. Ensure the reading is beginner-friendly."
+        prompt_content = "You are a wise and knowledgeable tarot reader. Provide a 3-paragraph holistic interpretation without referring to the cards directly. Instead, focus on the positions and the influences and advice they represent."
     else:
         prompt_content = "You are a wise and knowledgeable tarot reader. Provide a one-paragraph interpretation of the card, explaining its significance without referring to the card directly. Ensure the reading is beginner-friendly."
     
@@ -131,7 +131,7 @@ def get_card_image_url(card_name):
     }
     response = requests.get(search_url, headers=headers)
     soup = BeautifulSoup(response.content, 'html.parser')
-    img_tag = soup.find("img")
+    img_tag = soup.find("img", attrs={"class": "t0fcAb"})  # Adjusted to target the correct image class
     if img_tag and 'src' in img_tag.attrs:
         return img_tag['src']
     return None
@@ -144,6 +144,21 @@ question = st.text_input('What troubles you my child?')
 
 # Initialize spread as an empty dictionary
 spread = {}
+holistic_reading = ""
+
+# Descriptions for each position
+position_descriptions = {
+    'The Present': 'Represents your current situation.',
+    'The Challenge': 'Indicates the immediate challenge or problem facing you.',
+    'The Past': 'Denotes past events that are affecting the current situation.',
+    'The Future': 'Predicts the likely outcome if things continue as they are.',
+    'Above': 'Represents your goal or best outcome in this situation.',
+    'Below': 'Reflects your subconscious influences, fears, and desires.',
+    'Advice': 'Offers guidance on how to navigate the current challenges.',
+    'External Influences': 'Represents external factors affecting the situation.',
+    'Hopes and Fears': 'Indicates your hopes, fears, and expectations.',
+    'Outcome': 'Predicts the final outcome of the situation.'
+}
 
 # User clicks to draw cards for the spread
 if st.button('Draw Cards 🃏'):
@@ -152,16 +167,21 @@ if st.button('Draw Cards 🃏'):
         card = random.choice(deck)
         deck.remove(card)
         
+        # Display card name, position, and description
+        st.write(f"**{position}: {card}** - {position_descriptions[position]}")
+        
         # Display card image
         image_url = get_card_image_url(card)
         if image_url:
-            st.image(image_url, caption=card, use_column_width=True)
-        else:
-            st.write(f"{position}: {card}")
+            st.image(image_url, use_column_width=True)
         
         # Get tarot reading for the drawn card
-        if position == 'Outcome':  # Assuming 'Outcome' is the last card for a holistic reading
-            reading = get_tarot_reading({position: card}, question, holistic=True)
-        else:
-            reading = get_tarot_reading({position: card}, question)
+        reading = get_tarot_reading({position: card}, question)
         st.write(reading)
+        
+        # Accumulate readings for holistic interpretation
+        holistic_reading += f"For the position of {position}, {reading} "
+
+    # Display holistic reading
+    holistic_interpretation = get_tarot_reading({}, question, holistic=True)
+    st.write(holistic_interpretation)
