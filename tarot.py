@@ -1,9 +1,6 @@
 import streamlit as st
 import openai
-from openai import ChatCompletion
 import random
-import requests
-from bs4 import BeautifulSoup
 
 # Use the OpenAI API key from Streamlit secrets
 openai.api_key = st.secrets["openai"]["api_key"]
@@ -130,18 +127,6 @@ def get_tarot_reading(spread, question, holistic=False):
     response = openai.Completion.create(model=model, messages=messages)
     return response['choices'][0]['message']['content']
 
-def get_card_image_url(card_name):
-    search_url = f"https://www.google.com/search?q=Rider+Waite+Original+{card_name}&tbm=isch"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    }
-    response = requests.get(search_url, headers=headers)
-    soup = BeautifulSoup(response.content, 'html.parser')
-    img_tag = soup.find("img", attrs={"class": "t0fcAb"})  # Adjusted to target the correct image class
-    if img_tag and 'src' in img_tag.attrs:
-        return img_tag['src']
-    return None
-
 st.title('🔮 Tarot Habibi - by Hammoud 🔮')
 st.write('Welcome to Tarot Habibi! This app provides tarot card readings using the Celtic Cross spread. Simply enter your question and draw the cards to receive insights into various aspects of your life. If you\'re new to tarot, don\'t worry! Each card\'s meaning will be explained in detail. Ready to begin? Please enter your question below:')
 
@@ -150,7 +135,6 @@ question = st.text_input('What troubles you my child?')
 
 # Initialize spread as an empty dictionary
 spread = {}
-holistic_reading = ""
 
 # Descriptions for each position
 position_descriptions = {
@@ -179,11 +163,6 @@ if st.button('Draw Cards 🃏'):
         
         # Display card name, position, and description
         st.write(f"**{position}: {card}** - {position_descriptions[position]}")
-        
-        # Display card image
-        image_url = get_card_image_url(card)
-        if image_url:
-            st.image(image_url, use_column_width=True)
         
         # Get tarot reading for the drawn card
         reading = get_tarot_reading({position: card}, question)
