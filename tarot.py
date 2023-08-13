@@ -107,13 +107,19 @@ celtic_cross_positions = [
     'Outcome'
 ]
 
-def get_tarot_reading(spread, question):
+def get_tarot_reading(spread, question, holistic=False):
     model = "gpt-4"
     position, card = list(spread.items())[0]
+    
+    if holistic:
+        prompt_content = "You are a wise and knowledgeable tarot reader. Provide a 3-paragraph holistic interpretation of the card, explaining its significance without referring to the card directly. Ensure the reading is beginner-friendly."
+    else:
+        prompt_content = "You are a wise and knowledgeable tarot reader. Provide a one-paragraph interpretation of the card, explaining its significance without referring to the card directly. Ensure the reading is beginner-friendly."
+    
     messages = [
-        {"role": "system", "content": "You are a wise and knowledgeable tarot reader. Provide a 3-paragraph narrative interpretation of the card, explaining its significance without referring to the card directly. Ensure the reading is beginner-friendly."},
+        {"role": "system", "content": prompt_content},
         {"role": "user", "content": question},
-        {"role": "user", "content": f"Please provide a detailed reading for the card {card} in the position {position}."}
+        {"role": "user", "content": f"Please provide a reading for the card {card} in the position {position}."}
     ]
     response = ChatCompletion.create(model=model, messages=messages)
     return response['choices'][0]['message']['content']
@@ -154,5 +160,8 @@ if st.button('Draw Cards 🃏'):
             st.write(f"{position}: {card}")
         
         # Get tarot reading for the drawn card
-        reading = get_tarot_reading({position: card}, question)
+        if position == 'Outcome':  # Assuming 'Outcome' is the last card for a holistic reading
+            reading = get_tarot_reading({position: card}, question, holistic=True)
+        else:
+            reading = get_tarot_reading({position: card}, question)
         st.write(reading)
