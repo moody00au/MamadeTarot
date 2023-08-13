@@ -2,7 +2,12 @@ import streamlit as st
 import openai
 from openai import ChatCompletion
 import random
-from VoxScript import GetGoogleSearchResults
+import requests
+from bs4 import BeautifulSoup
+
+# Use the OpenAI API key from Streamlit secrets
+openai.api_key = st.secrets["openai"]["api_key"]
+
 
 # Use the OpenAI API key from Streamlit secrets
 openai.api_key = st.secrets["openai"]["api_key"]
@@ -87,20 +92,6 @@ tarot_deck = [
     'Knight of Wands',
     'Queen of Wands',
     'King of Wands'
-]
-
-# Define the positions in the Celtic Cross spread
-celtic_cross_positions = [
-    'The Present',
-    'The Challenge',
-    'The Past',
-    'The Future',
-    'Above',
-    'Below',
-    'Advice',
-    'External Influences',
-    'Hopes and Fears',
-    'Outcome'
 ]
 
 def get_tarot_reading(spread, question):
