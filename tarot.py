@@ -108,7 +108,7 @@ celtic_cross_positions = [
 ]
 
 def get_tarot_reading(spread, question, holistic=False):
-    model = "gpt-4"
+    model = "gpt-3.5-turbo"
     position, card = list(spread.items())[0]
     
     if holistic:
