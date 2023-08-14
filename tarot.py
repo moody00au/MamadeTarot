@@ -110,22 +110,12 @@ def get_tarot_reading(spread, question, holistic=False):
     if holistic:
         spread_description = ". ".join([f"{pos}: {card}" for pos, card in spread.items()])
         prompt_content = f"You are a wise and knowledgeable tarot reader. Given the spread: {spread_description}, provide a 3-paragraph holistic interpretation without referring to the cards directly. Instead, focus on the positions and the influences and advice they represent."
-        messages = [
-            {"role": "system", "content": "You are a wise and knowledgeable tarot reader."},
-            {"role": "user", "content": question},
-            {"role": "user", "content": prompt_content}
-        ]
     else:
         position, card = list(spread.items())[0]
-        prompt_content = "You are a wise and knowledgeable tarot reader. Provide a one-paragraph interpretation of the card, explaining its significance without referring to the card directly. Ensure the reading is beginner-friendly."
-        messages = [
-            {"role": "system", "content": "You are a wise and knowledgeable tarot reader."},
-            {"role": "user", "content": question},
-            {"role": "user", "content": f"Please provide a reading for the card {card} in the position {position}."}
-        ]
+        prompt_content = f"You are a wise and knowledgeable tarot reader. Provide a one-paragraph interpretation of the card {card} in the position {position}, explaining its significance without referring to the card directly. Ensure the reading is beginner-friendly."
     
-    response = openai.Completion.create(model=model, messages=messages)
-    return response['choices'][0]['message']['content']
+    response = openai.Completion.create(model=model, prompt=prompt_content, max_tokens=200)
+    return response.choices[0].text.strip()
 
 st.title('🔮 Tarot Habibi - by Hammoud 🔮')
 st.write('Welcome to Tarot Habibi! This app provides tarot card readings using the Celtic Cross spread. Simply enter your question and draw the cards to receive insights into various aspects of your life. If you\'re new to tarot, don\'t worry! Each card\'s meaning will be explained in detail. Ready to begin? Please enter your question below:')
