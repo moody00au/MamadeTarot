@@ -1,6 +1,9 @@
 # MamadeTarot
 Silly (or deep and mysterious) tarot readings using GPT4
 
+Running at:
+https://madame-tarot.streamlit.app/
+
 # Tarot Reading App
 
 This is a Streamlit app that uses OpenAI's GPT-4 model to provide tarot readings. The user can draw cards for a Celtic Cross spread, and the app will provide a detailed interpretation of the spread, including 2nd, 3rd, and 4th degree associations and constellations.
