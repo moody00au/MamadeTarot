@@ -110,11 +110,13 @@ def get_tarot_reading(spread, question, holistic=False):
     if holistic:
         spread_description = ". ".join([f"{pos}: {card}" for pos, card in spread.items()])
         prompt_content = f"You are a wise and knowledgeable tarot reader. Given the spread: {spread_description}, provide a 3-paragraph holistic interpretation without referring to the cards directly. Instead, focus on the positions and the influences and advice they represent."
+        max_tokens = 300  # Increased max tokens for 3 paragraphs
     else:
         position, card = list(spread.items())[0]
         prompt_content = f"You are a wise and knowledgeable tarot reader. Provide a one-paragraph interpretation of the card {card} in the position {position}, explaining its significance without referring to the card directly. Ensure the reading is beginner-friendly."
+        max_tokens = 100  # Reduced max tokens for 1 paragraph
     
-    response = openai.Completion.create(model=model, prompt=prompt_content, max_tokens=200)
+    response = openai.Completion.create(model=model, prompt=prompt_content, max_tokens=max_tokens)
     return response.choices[0].text.strip()
 
 st.title('🔮 Tarot Habibi - by Hammoud 🔮')
@@ -155,9 +157,8 @@ if st.button('Draw Cards 🃏'):
         st.write(f"**{position}: {card}** - {position_descriptions[position]}")
         
         # Get tarot reading for the drawn card
-        reading = get_tarot_reading({position: card}, question)
+        if position == 'Outcome':
+            reading = get_tarot_reading(drawn_spread, question, holistic=True)
+        else:
+            reading = get_tarot_reading({position: card}, question)
         st.write(reading)
-        
-    # Display holistic reading using the drawn spread
-    holistic_interpretation = get_tarot_reading(drawn_spread, question, holistic=True)
-    st.write(holistic_interpretation)
