@@ -143,24 +143,17 @@ position_descriptions = {
 }
 
 # User clicks to draw cards for the spread
+# User clicks to draw cards for the spread
 if st.button('Draw Cards 🃏'):
     deck = tarot_deck.copy()
-    drawn_spread = {}  # To save the drawn spread for holistic reading
+    
     for position in celtic_cross_positions:
         card = random.choice(deck)
         deck.remove(card)
-        
-        # Save the drawn card to the spread
-        drawn_spread[position] = card
         
         # Display card name, position, and description
         st.write(f"**{position}: {card}** - {position_descriptions[position]}")
         
         # Get tarot reading for the drawn card
-        if position == 'Outcome':
-            reading = get_tarot_reading(drawn_spread, question, holistic=True)
-        else:
-            reading = get_tarot_reading({position: card}, question)
-        st.write(reading)
-
+        reading = get_tarot_reading({position: card}, question)
 
