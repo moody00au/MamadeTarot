@@ -102,45 +102,66 @@ celtic_cross_positions = [
 
 def get_tarot_reading(spread, question, holistic=False):
     model = "gpt-3.5-turbo"
-    prompt_content = f"You are a wise and knowledgeable tarot reader. Given the spread: {spread}, provide a holistic interpretation."
+
+    if holistic:
+        spread_description = ". ".join([f"{pos}: {card}" for pos, card in spread.items()])
+        prompt_content = f"You are a wise and knowledgeable tarot reader. Given the spread: {spread_description}, provide a 3-paragraph holistic interpretation without referring to the cards directly. Instead, focus on the positions and the influences and advice they represent."
+    else:
+        position, card = list(spread.items())[0]
+        prompt_content = f"You are a wise and knowledgeable tarot reader. Provide a one-paragraph interpretation of the card {card} in the position {position}, explaining its significance without referring to the card directly. Ensure the reading is beginner-friendly."
+
     chat_log = [{'role': 'system', 'content': 'You are a helpful assistant.'}, {'role': 'user', 'content': prompt_content}]
+        
     response = openai.ChatCompletion.create(
         model=model,
         messages=chat_log,
-        max_tokens=200
+        max_tokens=max_tokens
     )
+
     return response['choices'][0]['message']['content'].strip()
 
-# An option to either ask a question or get a general reading
 st.title('🔮 Tarot Habibi - by Hammoud 🔮')
-st.write('Welcome to Tarot Habibi! Choose to either ask a question and draw the cards for a detailed reading, or select an area for a general reading.')
+st.write('Welcome to Tarot Habibi! This app provides tarot card readings using the Celtic Cross spread. Simply enter your question and draw the cards to receive insights into various aspects of your life. If you\'re new to tarot, don\'t worry! Each card\'s meaning will be explained in detail. Ready to begin? Please enter your question below:')
 
-reading_type = st.radio('What type of reading do you want?', ('Ask a question', 'General reading'))
+# User enters their question
+question = st.text_input('What troubles you my child?')
 
-if reading_type == 'Ask a question':
-    if st.button('Ask a question about my love life'):
-        question = "What will happen in my love life?"
-    elif st.button('Ask a question about my professional life'):
-        question = "What will happen in my professional life?"
-    elif st.button('Ask a question about my emotional life'):
-        question = "What will happen in my emotional life?"
-    elif st.button('Ask a question about my friendships'):
-        question = "What will happen in my friendships?"
-    
-    if question:
-        spread = random.sample(tarot_deck, 10)  # Draw 10 cards for the spread
-        reading = get_tarot_reading(spread, question, holistic=True)
+# Initialize spread as an empty dictionary
+spread = {}
+
+# Descriptions for each position
+position_descriptions = {
+    'The Present': 'Represents your current situation.',
+    'The Challenge': 'Indicates the immediate challenge or problem facing you.',
+    'The Past': 'Denotes past events that are affecting the current situation.',
+    'The Future': 'Predicts the likely outcome if things continue as they are.',
+    'Above': 'Represents your goal or best outcome in this situation.',
+    'Below': 'Reflects your subconscious influences, fears, and desires.',
+    'Advice': 'Offers guidance on how to navigate the current challenges.',
+    'External Influences': 'Represents external factors affecting the situation.',
+    'Hopes and Fears': 'Indicates your hopes, fears, and expectations.',
+    'Outcome': 'Predicts the final outcome of the situation.'
+}
+
+# User clicks to draw cards for the spread
+if st.button('Draw Cards 🃏'):
+    deck = tarot_deck.copy()
+    drawn_spread = {}  # To save the drawn spread for holistic reading
+    for position in celtic_cross_positions:
+        card = random.choice(deck)
+        deck.remove(card)
+        
+        # Save the drawn card to the spread
+        drawn_spread[position] = card
+        
+        # Display card name, position, and description
+        st.write(f"**{position}: {card}** - {position_descriptions[position]}")
+        
+        # Get tarot reading for the drawn card
+        if position == 'Outcome':
+            reading = get_tarot_reading(drawn_spread, question, holistic=True)
+        else:
+            reading = get_tarot_reading({position: card}, question)
         st.write(reading)
-elif reading_type == 'General reading':
-    if st.button('Get a general reading about my love life'):
-        area = "love life"
-    elif st.button('Get a general reading about my professional life'):
-        area = "professional life"
-    elif st.button('Get a general reading about my emotional life'):
-        area = "emotional life"
-    elif st.button('Get a general reading about my friendships'):
-        area = "friendships"
-    
-    if area:
-        reading = get_general_reading(area)
-        st.write(reading)
+
+
