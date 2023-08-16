@@ -143,8 +143,7 @@ position_descriptions = {
 }
 
 # User clicks to draw cards for the spread
-# User clicks to draw cards for the spread
-if st.button('Draw Cards 🃏'):
+if st.button('Draw Cards 🃏') and question:
     deck = tarot_deck.copy()
     
     for position in celtic_cross_positions:
@@ -156,4 +155,4 @@ if st.button('Draw Cards 🃏'):
         
         # Get tarot reading for the drawn card
         reading = get_tarot_reading({position: card}, question)
-
+        st.write(reading)
