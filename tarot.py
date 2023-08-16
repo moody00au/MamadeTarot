@@ -106,18 +106,23 @@ celtic_cross_positions = [
 
 def get_tarot_reading(spread, question, holistic=False):
     model = "gpt-3.5-turbo"
-    
+
     if holistic:
         spread_description = ". ".join([f"{pos}: {card}" for pos, card in spread.items()])
         prompt_content = f"You are a wise and knowledgeable tarot reader. Given the spread: {spread_description}, provide a 3-paragraph holistic interpretation without referring to the cards directly. Instead, focus on the positions and the influences and advice they represent."
-        max_tokens = 300  # Increased max tokens for 3 paragraphs
     else:
         position, card = list(spread.items())[0]
         prompt_content = f"You are a wise and knowledgeable tarot reader. Provide a one-paragraph interpretation of the card {card} in the position {position}, explaining its significance without referring to the card directly. Ensure the reading is beginner-friendly."
-        max_tokens = 100  # Reduced max tokens for 1 paragraph
-    
-    response = openai.Completion.create(model=model, prompt=prompt_content, max_tokens=max_tokens)
-    return response.choices[0].text.strip()
+
+    chat_log = [{'role': 'system', 'content': 'You are a helpful assistant.'}, {'role': 'user', 'content': prompt_content}]
+        
+    response = openai.ChatCompletion.create(
+        model=model,
+        messages=chat_log,
+        max_tokens=max_tokens
+    )
+
+    return response['choices'][0]['message']['content'].strip()
 
 st.title('🔮 Tarot Habibi - by Hammoud 🔮')
 st.write('Welcome to Tarot Habibi! This app provides tarot card readings using the Celtic Cross spread. Simply enter your question and draw the cards to receive insights into various aspects of your life. If you\'re new to tarot, don\'t worry! Each card\'s meaning will be explained in detail. Ready to begin? Please enter your question below:')
