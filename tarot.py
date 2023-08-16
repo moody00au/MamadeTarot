@@ -119,7 +119,6 @@ def get_tarot_reading(spread, question, holistic=False):
     response = openai.ChatCompletion.create(
         model=model,
         messages=chat_log,
-        max_tokens=max_tokens
     )
 
     return response['choices'][0]['message']['content'].strip()
