@@ -181,7 +181,8 @@ card_to_filename = {
     'King of Wands': 'Wands14.jpg'
 }
 
-base_url = "https://raw.githubusercontent.com/moody00au/MadameTarot/tarot_images/"
+https://raw.githubusercontent.com/moody00au/MamadeTarot/tarot_images/
+
 
 def get_tarot_reading(spread, question, holistic=False):
     model = "gpt-3.5-turbo"
