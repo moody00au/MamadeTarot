@@ -100,6 +100,89 @@ celtic_cross_positions = [
     'Outcome'
 ]
 
+card_to_filename = {
+    'Ace of Cups': 'Cups01.jpg',
+    'Two of Cups': 'Cups02.jpg',
+    'Three of Cups': 'Cups03.jpg',
+    'Four of Cups': 'Cups04.jpg',
+    'Five of Cups': 'Cups05.jpg',
+    'Six of Cups': 'Cups06.jpg',
+    'Seven of Cups': 'Cups07.jpg',
+    'Eight of Cups': 'Cups08.jpg',
+    'Nine of Cups': 'Cups09.jpg',
+    'Ten of Cups': 'Cups10.jpg',
+    'Page of Cups': 'Cups11.jpg',
+    'Knight of Cups': 'Cups12.jpg',
+    'Queen of Cups': 'Cups13.jpg',
+    'King of Cups': 'Cups14.jpg',
+    'Ace of Pentacles': 'Pents01.jpg',
+    'Two of Pentacles': 'Pents02.jpg',
+    'Three of Pentacles': 'Pents03.jpg',
+    'Four of Pentacles': 'Pents04.jpg',
+    'Five of Pentacles': 'Pents05.jpg',
+    'Six of Pentacles': 'Pents06.jpg',
+    'Seven of Pentacles': 'Pents07.jpg',
+    'Eight of Pentacles': 'Pents08.jpg',
+    'Nine of Pentacles': 'Pents09.jpg',
+    'Ten of Pentacles': 'Pents10.jpg',
+    'Page of Pentacles': 'Pents11.jpg',
+    'Knight of Pentacles': 'Pents12.jpg',
+    'Queen of Pentacles': 'Pents13.jpg',
+    'King of Pentacles': 'Pents14.jpg',
+    'The Fool': 'RWS_Tarot_00_Fool.jpg',
+    'The Magician': 'RWS_Tarot_01_Magician.jpg',
+    'The High Priestess': 'RWS_Tarot_02_High_Priestess.jpg',
+    'The Empress': 'RWS_Tarot_03_Empress.jpg',
+    'The Emperor': 'RWS_Tarot_04_Emperor.jpg',
+    'The Hierophant': 'RWS_Tarot_05_Hierophant.jpg',
+    'The Lovers': 'TheLovers.jpg',
+    'The Chariot': 'RWS_Tarot_07_Chariot.jpg',
+    'Strength': 'RWS_Tarot_08_Strength.jpg',
+    'The Hermit': 'RWS_Tarot_09_Hermit.jpg',
+    'Wheel of Fortune': 'RWS_Tarot_10_Wheel_of_Fortune.jpg',
+    'Justice': 'RWS_Tarot_11_Justice.jpg',
+    'The Hanged Man': 'RWS_Tarot_12_Hanged_Man.jpg',
+    'Death': 'RWS_Tarot_13_Death.jpg',
+    'Temperance': 'RWS_Tarot_14_Temperance.jpg',
+    'The Devil': 'RWS_Tarot_15_Devil.jpg',
+    'The Tower': 'RWS_Tarot_16_Tower.jpg',
+    'The Star': 'RWS_Tarot_17_Star.jpg',
+    'The Moon': 'RWS_Tarot_18_Moon.jpg',
+    'The Sun': 'RWS_Tarot_19_Sun.jpg',
+    'Judgement': 'RWS_Tarot_20_Judgement.jpg',
+    'The World': 'RWS_Tarot_21_World.jpg',
+    'Ace of Swords': 'Swords01.jpg',
+    'Two of Swords': 'Swords02.jpg',
+    'Three of Swords': 'Swords03.jpg',
+    'Four of Swords': 'Swords04.jpg',
+    'Five of Swords': 'Swords05.jpg',
+    'Six of Swords': 'Swords06.jpg',
+    'Seven of Swords': 'Swords07.jpg',
+    'Eight of Swords': 'Swords08.jpg',
+    'Nine of Swords': 'Swords09.jpg',
+    'Ten of Swords': 'Swords10.jpg',
+    'Page of Swords': 'Swords11.jpg',
+    'Knight of Swords': 'Swords12.jpg',
+    'Queen of Swords': 'Swords13.jpg',
+    'King of Swords': 'Swords14.jpg',
+    'Ace of Wands': 'Wands01.jpg',
+    'Two of Wands': 'Wands02.jpg',
+    'Three of Wands': 'Wands03.jpg',
+    'Four of Wands': 'Wands04.jpg',
+    'Five of Wands': 'Wands05.jpg',
+    'Six of Wands': 'Wands06.jpg',
+    'Seven of Wands': 'Wands07.jpg',
+    'Eight of Wands': 'Wands08.jpg',
+    'Nine of Wands': 'Wands09.jpg',
+    'Ten of Wands': 'Wands10.jpg',
+    'Page of Wands': 'Wands11.jpg',
+    'Knight of Wands': 'Wands12.jpg',
+    'Queen of Wands': 'Wands13.jpg',
+    'King of Wands': 'Wands14.jpg'
+}
+
+base_url = "https://raw.githubusercontent.com/moody00au/MadameTarot/main/tarot_images/"
+
 def get_tarot_reading(spread, question, holistic=False):
     model = "gpt-3.5-turbo"
     
@@ -152,6 +235,72 @@ if st.button('Draw Cards 🃏') and question:
         
         # Display card name, position, and description
         st.write(f"**{position}: {card}** - {position_descriptions[position]}")
+        
+        # Fetch and display the card image
+        image_url = base_url + card_to_filename[card]
+        st.image(image_url, use_column_width=True)
+        
+        # Get tarot reading for the drawn card
+        reading = get_tarot_reading({position: card}, question)
+        st.write(reading)
+
+base_url = "https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME/main/tarot_images/"
+
+
+def get_tarot_reading(spread, question, holistic=False):
+    model = "gpt-3.5-turbo"
+    
+    if holistic:
+        spread_description = ". ".join([f"{pos}: {card}" for pos, card in spread.items()])
+        prompt_content = f"Given the user's question: '{question}', and the tarot spread: {spread_description}, provide a 3-paragraph holistic interpretation without referring to the cards directly. Instead, focus on the positions and the influences and advice they represent."
+    else:
+        position, card = list(spread.items())[0]
+        prompt_content = f"Given the user's question: '{question}', provide a one-paragraph interpretation of the card {card} in the position {position}, explaining its significance without referring to the card directly. Ensure the reading is beginner-friendly."
+
+    chat_log = [{'role': 'system', 'content': 'You are a helpful assistant.'}, {'role': 'user', 'content': prompt_content}]
+        
+    response = openai.ChatCompletion.create(
+        model=model,
+        messages=chat_log,
+    )
+
+    return response['choices'][0]['message']['content'].strip()
+
+st.title('🔮 Tarot Habibi - by Hammoud 🔮')
+st.write('Welcome to Tarot Habibi! This app provides tarot card readings using the Celtic Cross spread. Simply enter your question and draw the cards to receive insights into various aspects of your life. If you\'re new to tarot, don\'t worry! Each card\'s meaning will be explained in detail. Ready to begin? Please enter your question below:')
+
+# User enters their question
+question = st.text_input('What troubles you my child?')
+
+# Initialize spread as an empty dictionary
+spread = {}
+
+
+# User clicks to draw cards for the spread
+if st.button('Draw Cards 🃏') and question:
+    deck = tarot_deck.copy()
+    
+    for position in celtic_cross_positions:
+        card = random.choice(deck)
+        deck.remove(card)
+        
+        # Display card name, position, and description
+        st.write(f"**{position}: {card}** - {position_descriptions[position]}")
+        # Inside your loop where you draw and display cards:
+        for position in celtic_cross_positions:
+            card = random.choice(deck)
+            deck.remove(card)
+            
+            # Display card name, position, and description
+            st.write(f"**{position}: {card}** - {position_descriptions[position]}")
+            
+            # Fetch and display the card image
+            image_url = base_url + card_to_filename[card]
+            st.image(image_url, use_column_width=True)
+            
+            # Get tarot reading for the drawn card
+            reading = get_tarot_reading({position: card}, question)
+            st.write(reading)
         
         # Get tarot reading for the drawn card
         reading = get_tarot_reading({position: card}, question)
