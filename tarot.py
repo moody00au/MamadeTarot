@@ -238,7 +238,7 @@ if st.button('Draw Cards 🃏') and question:
         st.markdown(f"<h2 style='text-align: center; font-weight: bold;'>{position}: {card}</h2>", unsafe_allow_html=True)
         
         # Create a 3-column layout (left, center, right)
-        col1, col2, col3 = st.beta_columns([1,2,1])
+        col1, col2, col3 = st.columns([1,2,1])
         
         # Fetch and display the card image with reduced size in the center column
         image_url = base_url + card_to_filename[card]
