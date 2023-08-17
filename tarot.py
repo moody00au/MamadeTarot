@@ -234,12 +234,12 @@ if st.button('Draw Cards 🃏') and question:
         card = random.choice(deck)
         deck.remove(card)
         
-        # Display card name, position, and description
-        st.write(f"**{position}: {card}** - {position_descriptions[position]}")
+        # Display card name, position, and description in larger, centered, and bold text
+        st.markdown(f"<h2 style='text-align: center; font-weight: bold;'>{position}: {card}</h2>", unsafe_allow_html=True)
         
-        # Fetch and display the card image
+        # Fetch and display the card image with reduced size
         image_url = base_url + card_to_filename[card]
-        st.image(image_url, use_column_width=True)
+        st.image(image_url, use_column_width='auto', width=300)  # Adjust the width as needed
         
         # Get tarot reading for the drawn card
         reading = get_tarot_reading({position: card}, question)
