@@ -181,7 +181,7 @@ card_to_filename = {
     'King of Wands': 'Wands14.jpg'
 }
 
-base_url = "https://raw.githubusercontent.com/moody00au/MamadeTarot/tarot_images/"
+base_url = "https://raw.githubusercontent.com/moody00au/MamadeTarot/main/tarot_images/"
 
 
 def get_tarot_reading(spread, question, holistic=False):
