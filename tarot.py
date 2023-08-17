@@ -245,4 +245,3 @@ if st.button('Draw Cards 🃏') and question:
         st.write(reading)
 
 
-
