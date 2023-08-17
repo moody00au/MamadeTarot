@@ -105,10 +105,10 @@ def get_tarot_reading(spread, question, holistic=False):
     
     if holistic:
         spread_description = ". ".join([f"{pos}: {card}" for pos, card in spread.items()])
-        prompt_content = f"You are a wise and knowledgeable tarot reader. Given the spread: {spread_description}, provide a 3-paragraph holistic interpretation without referring to the cards directly. Instead, focus on the positions and the influences and advice they represent."
+        prompt_content = f"Given the user's question: '{question}', and the tarot spread: {spread_description}, provide a 3-paragraph holistic interpretation without referring to the cards directly. Instead, focus on the positions and the influences and advice they represent."
     else:
         position, card = list(spread.items())[0]
-        prompt_content = f"You are a wise and knowledgeable tarot reader. Provide a one-paragraph interpretation of the card {card} in the position {position}, explaining its significance without referring to the card directly. Ensure the reading is beginner-friendly."
+        prompt_content = f"Given the user's question: '{question}', provide a one-paragraph interpretation of the card {card} in the position {position}, explaining its significance without referring to the card directly. Ensure the reading is beginner-friendly."
 
     chat_log = [{'role': 'system', 'content': 'You are a helpful assistant.'}, {'role': 'user', 'content': prompt_content}]
         
