@@ -237,12 +237,10 @@ if st.button('Draw Cards 🃏') and question:
         # Display card name, position, and description in larger, centered, and bold text
         st.markdown(f"<h2 style='text-align: center; font-weight: bold;'>{position}: {card}</h2>", unsafe_allow_html=True)
         
-        # Create a 3-column layout (left, center, right)
-        col1, col2, col3 = st.columns([1,2,1])
-        
-        # Fetch and display the card image with reduced size in the center column
+        # Fetch and display the card image with reduced size
         image_url = base_url + card_to_filename[card]
-        col2.image(image_url, use_column_width='auto', width=300)  # Adjust the width as needed
+        st.image(image_url, use_column_width='auto', width=300)  # Adjust the width as needed
         
         # Get tarot reading for the drawn card
+        reading = get_tarot_reading({position: card}, question)
         st.write(reading)
