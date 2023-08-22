@@ -183,6 +183,14 @@ card_to_filename = {
 
 base_url = "https://raw.githubusercontent.com/moody00au/MamadeTarot/main/tarot_images/"
 
+# Check if the counter file exists, if not create one
+try:
+    with open('counter.txt', 'r') as f:
+        counter = int(f.read())
+except FileNotFoundError:
+    with open('counter.txt', 'w') as f:
+        f.write('0')
+    counter = 0
 
 def get_tarot_reading(spread, question, holistic=False):
     model = "gpt-3.5-turbo"
@@ -229,6 +237,10 @@ position_descriptions = {
 # User clicks to draw cards for the spread
 if st.button('Draw Cards 🃏') and question:
     deck = tarot_deck.copy()
+
+    counter += 1
+    with open('counter.txt', 'w') as f:
+        f.write(str(counter))
     
     for position in celtic_cross_positions:
         card = random.choice(deck)
