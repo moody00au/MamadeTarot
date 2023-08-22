@@ -11,17 +11,18 @@ openai.api_key = st.secrets["openai"]["api_key"]
 my_email = st.secrets["gmail"]["my_email"]
 my_app_specific_password = st.secrets["gmail"]["my_app_specific_password"]
 
+# Function to send reading email
 def send_reading_email(message, recipient):
     msg = EmailMessage()
     msg.set_content(message)
     msg['Subject'] = 'Tarot Reading'
-    msg['From'] = my_email
+    msg['From'] = st.secrets["gmail"]["my_email"]
     msg['To'] = recipient
 
     # Establish a connection to the Gmail server
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
-    server.login(my_email, my_app_specific_password)
+    server.login(st.secrets["gmail"]["my_email"], st.secrets["gmail"]["my_app_specific_password"])
     server.send_message(msg)
     server.quit()
     
@@ -256,11 +257,11 @@ position_descriptions = {
 
 # User clicks to draw cards for the spread
 if st.button('Draw Cards 🃏') and question:
-    deck = tarot_deck.copy()
-
     counter += 1
     with open('counter.txt', 'w') as f:
         f.write(str(counter))
+    
+    full_reading = ""
     
     for position in celtic_cross_positions:
         card = random.choice(deck)
@@ -277,8 +278,16 @@ if st.button('Draw Cards 🃏') and question:
         reading = get_tarot_reading({position: card}, question)
         st.write(reading)
 
+        reading = get_tarot_reading({position: card}, question)
+        full_reading += f"{position}: {card}\n{reading}\n\n"  # Format as needed
+        st.write(reading)
+
+
     recipient_email = st.text_input('Enter the recipient email:', key="recipient_email")
     if st.button('Send Reading 📧') and recipient_email:
-        # Format the reading
-        formatted_reading = f"Question: {question}\n\n"  # Add more formatting as needed
-        send_reading_email(formatted_reading, recipient_email)
+        email_content = f"Question: {question}\n\n{full_reading}"
+        try:
+            send_reading_email(email_content, recipient_email)
+            st.success("Email sent successfully!")
+        except Exception as e:
+            st.error(f"Error sending email: {e}")
