@@ -1,10 +1,30 @@
 import streamlit as st
 import openai
 import random
+import smtplib
+from email.message import EmailMessage
 
 # Use the OpenAI API key from Streamlit secrets
 openai.api_key = st.secrets["openai"]["api_key"]
 
+# Use the email and password from Streamlit Secrets
+my_email = st.secrets["gmail"]["my_email"]
+my_app_specific_password = st.secrets["gmail"]["my_app_specific_password"]
+
+def send_reading_email(message, recipient):
+    msg = EmailMessage()
+    msg.set_content(message)
+    msg['Subject'] = 'Tarot Reading'
+    msg['From'] = my_email
+    msg['To'] = recipient
+
+    # Establish a connection to the Gmail server
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(my_email, my_app_specific_password)
+    server.send_message(msg)
+    server.quit()
+    
 # Define a dictionary of tarot cards
 tarot_deck = [
     'The Fool',
@@ -256,3 +276,9 @@ if st.button('Draw Cards 🃏') and question:
         # Get tarot reading for the drawn card
         reading = get_tarot_reading({position: card}, question)
         st.write(reading)
+
+    recipient_email = st.text_input('Enter the recipient email:', key="recipient_email")
+    if st.button('Send Reading 📧') and recipient_email:
+        # Format the reading
+        formatted_reading = f"Question: {question}\n\n"  # Add more formatting as needed
+        send_reading_email(formatted_reading, recipient_email)
