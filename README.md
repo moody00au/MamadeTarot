@@ -1,4 +1,4 @@
-# MamadeTarot
+# MadameTarot
 Silly (or deep and mysterious) tarot readings using GPT4
 
 Demo Running at:
