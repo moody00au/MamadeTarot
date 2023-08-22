@@ -2,3 +2,6 @@ streamlit
 openai
 requests
 beautifulsoup4
+smtplib
+email.message 
+EmailMessage
