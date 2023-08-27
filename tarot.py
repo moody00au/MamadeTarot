@@ -11,6 +11,10 @@ openai.api_key = st.secrets["openai"]["api_key"]
 my_email = st.secrets["gmail"]["my_email"]
 my_app_specific_password = st.secrets["gmail"]["my_app_specific_password"]
 
+# Check if the button was previously clicked
+if 'button_clicked' not in st.session_state:
+    st.session_state.button_clicked = False
+
 # Function to send reading email
 def send_reading_email(message, recipient):
     msg = EmailMessage()
@@ -282,12 +286,21 @@ if st.button('Draw Cards 🃏') and question:
         full_reading += f"{position}: {card}\n{reading}\n\n"  # Format as needed
         st.write(reading)
 
-
-    recipient_email = st.text_input('Enter the recipient email:', key="recipient_email")
+    # After generating the Tarot reading and displaying it to the user:
+    recipient_email = st.text_input("Enter your email to receive the reading:")
+    
+    # User clicks to send the reading
     if st.button('Send Reading 📧') and recipient_email:
+        # Set the button clicked state to True
+        st.session_state.button_clicked = True
+    
         email_content = f"Question: {question}\n\n{full_reading}"
         try:
             send_reading_email(email_content, recipient_email)
             st.success("Email sent successfully!")
         except Exception as e:
             st.error(f"Error sending email: {e}")
+    
+    # If the button was clicked in a previous run, display the success/error message
+    if st.session_state.button_clicked:
+        st.success("Email sent successfully!")
