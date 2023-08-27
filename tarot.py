@@ -259,6 +259,8 @@ position_descriptions = {
     'Outcome': 'Predicts the final outcome of the situation.'
 }
 
+deck = tarot_deck.copy()
+
 # User clicks to draw cards for the spread
 if st.button('Draw Cards 🃏') and question:
     counter += 1
@@ -267,6 +269,13 @@ if st.button('Draw Cards 🃏') and question:
     
     full_reading = ""
     
+    # Initialize the deck as a copy of tarot_deck
+    deck = tarot_deck.copy()
+    
+    for position in celtic_cross_positions:
+        card = random.choice(deck)
+        deck.remove(card)
+
     for position in celtic_cross_positions:
         card = random.choice(deck)
         deck.remove(card)
